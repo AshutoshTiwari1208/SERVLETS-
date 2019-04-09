@@ -1,0 +1,169 @@
+HTML WITH SERVLETS, JSP ,  .XML(Web Descriptor) FOR ADDITION OF 2 NUMBERS.
+
+1) HTML :
+<!DOCTYPE html>
+<html>
+<body>
+<form action="add.jsp" method="get">
+Enter 1st Number
+<input type="text" name="num1"><br>
+Enter 2nd Number
+<input type="text" name="num2">
+<input type="submit">
+
+</form>
+
+</body>
+</html>
+
+2)SERVLETS
+-------------------->AddServlet.java
+ 	package com.inclinedscorpio;
+	
+	import java.io.IOException;
+	import java.io.PrintWriter;
+	
+	import javax.servlet.RequestDispatcher;
+	import javax.servlet.ServletConfig;
+	import javax.servlet.ServletContext;
+	import javax.servlet.ServletException;
+	import javax.servlet.http.Cookie;
+	import javax.servlet.http.HttpServlet;
+	import javax.servlet.http.HttpServletRequest;
+	import javax.servlet.http.HttpServletResponse;
+	import javax.servlet.http.HttpSession;
+	
+	public class AddServlet extends HttpServlet {
+		
+		public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException
+		{
+			
+			int i=Integer.parseInt(req.getParameter("num1"));
+			int j=Integer.parseInt(req.getParameter("num2"));
+			int k=i+j;
+			/*
+			PrintWriter out=res.getWriter();
+			out.println("result is :"+k);
+			
+			//calling other servlet SqServlet using request dispatcher....
+			req.setAttribute("k",k);		
+			RequestDispatcher rd=req.getRequestDispatcher("sq");
+			rd.forward(req,res);*/
+			
+			/*  To REDIRECT TO OTHER SERVLET......
+			 * 
+			 * res.sendRedirect("sq?k="+k);*/
+			
+			
+		
+			/* SESSION AND REDIRECTING.....
+			 * 
+			HttpSession session=req.getSession();
+			session.setAttribute("k",k);
+			res.sendRedirect("sq");
+			*/
+			
+			res.getWriter().print("<head><body bgcolor='yellow'>");
+			ServletConfig ctx=getServletConfig();
+			String alpha=ctx.getInitParameter("name");
+			res.getWriter().println(alpha+" Hello to you ");
+			res.getWriter().print("</body></head>");
+					
+		}
+		
+	
+	}
+---------------->SqServlet.java
+package com.inclinedscorpio;
+
+import java.io.IOException;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+public class SqServlet extends HttpServlet {
+
+	public void doGet(HttpServletRequest req,HttpServletResponse res) throws IOException
+	{
+		/* SESSION USED IN SERVLETS
+		HttpSession session=req.getSession();	
+		int a=(int)session.getAttribute("k");
+		*/
+		
+		int a=Integer.parseInt(req.getParameter("k"));//when redirecting ...
+		
+	
+		a=a*a;
+		res.getWriter().println("The Square of the number using session is "+ a);
+	}
+}
+
+3)JSP
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body bgcolor="pink">
+
+<div style="font-size:30px;margin:80px 14%;">
+<%
+   int a=Integer.parseInt(request.getParameter("num1"));
+	int b=Integer.parseInt(request.getParameter("num2"));
+	int k=a+b;
+	
+	out.println("The sum is : "+k);
+%>
+</div>
+
+</body>
+</html>
+
+4) Web Descriptor -- .xml file
+
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" id="WebApp_ID" version="3.1">
+<servlet>
+<servlet-name>adding</servlet-name>
+<servlet-class>com.inclinedscorpio.AddServlet</servlet-class>
+<init-param>
+	<param-name>name</param-name>
+	<param-value>Districtrion</param-value>
+</init-param>
+</servlet> 
+
+<servlet-mapping>
+<servlet-name>adding</servlet-name>
+<url-pattern>/add</url-pattern>
+</servlet-mapping>
+ 
+ <servlet>
+<servlet-name>square</servlet-name>
+<servlet-class>com.inclinedscorpio.SqServlet</servlet-class>
+
+</servlet> 
+
+<servlet-mapping>
+<servlet-name>square</servlet-name>
+<url-pattern>/sq</url-pattern>
+</servlet-mapping>
+
+<context-param>
+	<param-name>name</param-name>
+	<param-value>Ashutosh</param-value>
+</context-param>
+
+<context-param>
+	<param-name>Phone</param-name>
+	<param-value>9034363309</param-value>
+</context-param>
+
+
+
+</web-app>
